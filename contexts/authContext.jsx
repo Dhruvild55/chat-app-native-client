@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }) => {
 
     const loadToken = async () => {
         const storedToken = await AsyncStorage.getItem("token");
-        console.log("storedToken", storedToken)
         if (storedToken) {
             try {
                 const decoded = jwtDecode(storedToken);
@@ -42,7 +41,6 @@ export const AuthProvider = ({ children }) => {
                 goToHomePage();
             } catch (error) {
                 goToWelcomePage();
-                console.log("failed to decode token", error)
             }
         } else {
             goToWelcomePage();

@@ -50,7 +50,6 @@ const ProfileModel = () => {
 
     }, []);
     const processUpdateProfile = (res) => {
-        console.log("data", res)
         setIsLoading(false);
         if (res.success) {
             updateToken(res.token);
@@ -91,7 +90,7 @@ const ProfileModel = () => {
             avatar: userData.avatar
         }
 
-        if (userData.avatar && userData.avatar?.url) {
+        if (typeof userData.avatar == "object") {
             setIsLoading(true);
             const res = await uploadToCloudinary(userData.avatar, "Profiles");
             if (res.success) {
@@ -107,7 +106,7 @@ const ProfileModel = () => {
 
     const handleAvatarEdit = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images', 'videos'],
+            mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
@@ -115,7 +114,7 @@ const ProfileModel = () => {
 
         if (!result.canceled) {
             setUserData({
-                ...userData, avatar: result.assets[0].uri
+                ...userData, avatar: result.assets[0]
             })
         }
     };

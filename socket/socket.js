@@ -7,7 +7,6 @@ let socket = null;
 
 export async function connectSocket() {
     const token = await AsyncStorage.getItem("token");
-    console.log("token", token);
 
     if (!token) {
         throw new Error("no token found. User must login first");

@@ -1,6 +1,10 @@
 import { useRouter } from 'expo-router';
-import { GearIcon } from 'phosphor-react-native';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { GearIcon, PlusIcon } from 'phosphor-react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Button from '../../components/Button';
+import ConversationItems from '../../components/ConversationItems';
+import Loading from '../../components/Loading';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import Typo from '../../components/Typo';
 import { colors, radius, spacingX, spacingY } from '../../constants/theme';
@@ -9,8 +13,50 @@ import { verticalScale } from '../../utils/styling';
 
 const Home = () => {
     const { user, logout } = useAuth();
-    console.log("user", user)
     const router = useRouter();
+    const [selectedTab, setSelectedTab] = useState(0);
+    const [loading, setLoading] = useState(false)
+
+    const conversations = [
+        {
+
+            name: "John Doe",
+            type: "direct",
+
+        },
+        {
+
+            name: "Team Dimond ",
+            type: "group",
+            lastMessage: {
+                senderName: "Virat",
+                content: "Hey! Are we still on for tonight? ",
+                createdAt: "2022-01-01T12:00:10.000Z",
+            }
+        },
+        {
+
+            name: "John Doe",
+            type: "direct",
+            lastMessage: {
+                senderName: "alice",
+                content: "Hey! Are we still on for tonight111? ",
+                createdAt: "2022-01-01T12:00:00.000Z",
+            }
+        },
+
+    ]
+
+    let directConversation = conversations.filter((item) => item.type === "direct").sort((a, b) => {
+        const aDate = a?.lastMessage?.createdAt || a.createdAt;
+        const bDate = b?.lastMessage?.createdAt || b.createdAt;
+        return new Date(bDate).getTime() - new Date(aDate).getTime();
+    })
+    let groupConversation = conversations.filter((item) => item.type === "group").sort((a, b) => {
+        const aDate = a?.lastMessage?.createdAt || a.createdAt;
+        const bDate = b?.lastMessage?.createdAt || b.createdAt;
+        return new Date(bDate).getTime() - new Date(aDate).getTime();
+    })
 
     return (
         <ScreenWrapper showPattern={true}>
@@ -24,10 +70,57 @@ const Home = () => {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.content}>
+                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingVertical: spacingY._20 }} >
+                        <View style={styles.navBar}>
+                            <View style={styles.tabs}>
+                                <TouchableOpacity onPress={() => setSelectedTab(0)} style={[styles.tabStyle, selectedTab == 0 && styles.activeTab]}>
+                                    <Typo>Direct Messages</Typo>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => setSelectedTab(1)} style={[styles.tabStyle, selectedTab == 1 && styles.activeTab]}>
+                                    <Typo>Groups</Typo>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <View style={{}}>
+                            {
+                                selectedTab == 0 && (
+                                    directConversation.map((item, index) => {
+                                        return (
+                                            <ConversationItems item={item} key={index}
+                                                router={router}
+                                                showDivider={directConversation.length != index + 1}
+                                            />
+                                        )
+                                    })
+
+                                )
+
+                            }
+                            {
+                                selectedTab == 1 && (
+                                    groupConversation.map((item, index) => {
+                                        return (
+                                            <ConversationItems item={item} key={index}
+                                                router={router}
+                                                showDivider={groupConversation.length != index + 1}
+                                            />
+                                        )
+                                    })
+                                )
+                            }
+                        </View>
+                        {
+                            loading && <Loading />
+                        }
+
+                    </ScrollView>
 
                 </View>
 
             </View>
+            <Button style={styles.floatingButton} onPress={() => router.push({ pathname: "/(main)/newConversationModel", params: { isGroup: selectedTab } })}>
+                <PlusIcon color={colors.black} size={verticalScale(22)} />
+            </Button>
         </ScreenWrapper >
     )
 }
@@ -60,6 +153,36 @@ const styles = StyleSheet.create({
         overflow: "hidden",
         paddingHorizontal: spacingX._20,
 
+    },
+    navBar: {
+        flexDirection: "row",
+        gap: spacingX._15,
+        alignItems: "center",
+        paddingHorizontal: spacingX._10,
+    },
+    tabs: {
+        flexDirection: "row",
+        gap: spacingX._10,
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    tabStyle: {
+        paddingVertical: spacingY._10,
+        paddingHorizontal: spacingX._20,
+        borderRadius: radius.full,
+        backgroundColor: colors.neutral100,
+    },
+    activeTab: {
+        backgroundColor: colors.primaryLight
+    },
+    floatingButton: {
+        height: verticalScale(50),
+        width: verticalScale(50),
+        borderRadius: 100,
+        position: "absolute",
+        bottom: verticalScale(30),
+        right: verticalScale(30)
     }
 
 })

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CLOUDINARY_CLOUD_NAME } from "../constants";
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from "../constants";
 
 const CLOUDINARY_API_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
 
@@ -15,7 +15,7 @@ export const uploadToCloudinary = async (file, folderName) => {
                 type: "image/jpeg",
                 name: file?.uri.split("/").pop() || "file.jpeg"
             })
-            formData.append("uupload_preset", CLOUDINARY_UPLOAD_PRESET);
+            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
             formData.append("folder", folderName);
 
             const response = await axios.post(CLOUDINARY_API_URL, formData, {
@@ -28,15 +28,14 @@ export const uploadToCloudinary = async (file, folderName) => {
         return { success: true, data: null }
 
     } catch (error) {
-        console.log(error)
+        console.log("error uploading file", error.response?.data || error.message)
         return { success: false, error: error }
     }
 }
 export const getAvatarPath = (file, isGroup) => {
-    console.log("123", file)
     if (file && typeof file == 'string') return file;
 
-    if (file && typeof file == 'object') return file.url;
+    if (file && typeof file == 'object') return file.uri || file.url;
 
     if (isGroup) return require("../assets/images/defaultGroupAvatar.png")
 
