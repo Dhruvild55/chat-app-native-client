@@ -11,6 +11,7 @@ import ScreenWrapper from '../../components/ScreenWrapper';
 import Typo from "../../components/Typo";
 import { colors, radius, spacingX, spacingY } from '../../constants/theme';
 import { useAuth } from "../../contexts/authContext";
+import { uploadToCloudinary } from "../../services/imageService";
 import { getContacts, newConversation } from "../../socket/socketEvents";
 import { verticalScale } from "../../utils/styling";
 
@@ -36,11 +37,24 @@ const newConversationModel = () => {
         }
     }, [])
     const processNewConversation = (res) => {
-        console.log("res", res);
-
+        setIsLoading(false)
+        if (res.success) {
+            router.back();
+            router.push({
+                pathname: "/(main)/conversation",
+                params: {
+                    id: res.data._id,
+                    name: res.data.name,
+                    avatar: res.data.avatar,
+                    type: res.data.type,
+                    participants: JSON.stringify(res.data.participants)
+                }
+            })
+        } else {
+            Alert.alert("Error ", res.msg)
+        }
     }
     const processGetContacts = (res) => {
-        console.log("res", res);
         if (res.success) {
             setContacts(res.contacts)
         }
@@ -61,7 +75,6 @@ const newConversationModel = () => {
         }
     };
     const toggleParticipant = (user) => {
-        console.log("user", user)
         setSelectedParticipants((prev) => {
             if (prev.includes(user._id)) {
                 return prev.filter((_id) => _id != user._id)
@@ -71,40 +84,42 @@ const newConversationModel = () => {
 
     }
     const onSelectUser = (user) => {
-        console.log("user", user)
         if (!currentUser) {
             Alert.alert("Authentication", "Please login to start conversation")
             return;
         }
-        console.log("participants", [currentUser.id, user._id])
         if (isGroupMode) {
             toggleParticipant(user)
         } else {
             newConversation({ type: "direct", participants: [currentUser.id, user._id] })
         }
     }
-    const createGroup = async () => { }
+    const createGroup = async () => {
+        if (!groupName.trim() || !currentUser || selectedParticipants.length < 2) return;
 
-    // const contacts = [
-    //     {
-    //         id: "1",
-    //         name: "john",
-    //         avatar: "https://res.cloudinary.com/dusgimcqs/image/upload/v1770297126/Profiles/pho6btqi7lzxpyl8bpt0.jpg",
-    //     },
-    //     {
-    //         id: "2",
-    //         name: "Ravi",
-    //         avatar: "https://res.cloudinary.com/dusgimcqs/image/upload/v1770297126/Profiles/pho6btqi7lzxpyl8bpt0.jpg",
-    //     },
-    //     {
-    //         id: "3",
-    //         name: "Dhruvil",
-    //         avatar: "https://res.cloudinary.com/dusgimcqs/image/upload/v1770297126/Profiles/pho6btqi7lzxpyl8bpt0.jpg",
-    //     }
+        setIsLoading(true);
+        try {
+            let avatar = null;
+            if (groupAvatar) {
+                const uploadResult = await uploadToCloudinary(groupAvatar.avatar, "group-avatars");
+                if (uploadResult.success) {
+                    avatar = uploadResult.data
+                }
+            }
+            newConversation({
+                type: "group",
+                participants: [currentUser.id, ...selectedParticipants],
+                name: groupName,
+                avatar: avatar
+            })
 
-    // ]
+        } catch (error) {
+            Alert.alert("error", error.message)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
-    console.log("selected", selectedParticipants)
     return (
         <ScreenWrapper isModel={true}>
             <View style={styles.container}>

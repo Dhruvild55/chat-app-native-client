@@ -1,13 +1,21 @@
 import moment from 'moment'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { colors, spacingX, spacingY } from '../constants/theme'
+import { useAuth } from '../contexts/authContext'
 import Avatar from './Avatar'
 import Typo from './Typo'
 
 const ConversationItems = ({ item, showDivider, router }) => {
+    const { user: currentUser } = useAuth();
     const lastMessage = item?.lastMessage;
-    const isDirect = item.type == "direct"
+    const isDirect = item.type == "direct";
+    let avatar = item.avatar;
+    const otherParticipant = isDirect ? item.participants.find(p => p._id != currentUser?.id)
+        : null
+    if (isDirect && otherParticipant) {
+        avatar = otherParticipant?.avatar
 
+    }
     const getLastMessageDate = () => {
         if (!lastMessage?.createdAt) return null;
         const messageDate = moment(lastMessage.createdAt);
@@ -28,17 +36,25 @@ const ConversationItems = ({ item, showDivider, router }) => {
         return lastMessage?.attachement ? "image" : lastMessage?.content
     }
     const openConversation = () => {
-
+        router.push({
+            pathname: "/(main)/conversation", params: {
+                id: item._id,
+                name: item.name,
+                avatar: item.avatar,
+                type: item.type,
+                participants: JSON.stringify(item.participants)
+            }
+        })
     }
     return (
         <View>
             <TouchableOpacity style={styles.conversationItem} onPress={openConversation}>
                 <View>
-                    <Avatar uri={null} size={47} isGroup={item.type === "group"} />
+                    <Avatar uri={avatar} size={47} isGroup={item.type === "group"} />
                 </View>
                 <View style={{ flex: 1 }}>
                     <View style={styles.row}>
-                        <Typo size={17} fontWeight='600'>{item.name} </Typo>
+                        <Typo size={17} fontWeight='600'>{isDirect ? otherParticipant?.name : item.name} </Typo>
                         {
                             item.lastMessage && (
                                 <Typo size={15}> {getLastMessageDate()}</Typo>

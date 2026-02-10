@@ -8,7 +8,7 @@ const RootLayout = () => {
             <Stack screenOptions={{ headerShown: false }} >
                 <Stack.Screen name='(main)/home' options={{ headerShown: false }} />
                 <Stack.Screen name='(main)/profileModel' options={{ presentation: "modal" }} />
-                {/* <Stack.Screen name='(main)/newConversationModel' options={{ presentation: "modal" }} /> */}
+                <Stack.Screen name='(main)/newConversationModel' options={{ presentation: "modal" }} />
             </Stack>
 
         </AuthProvider>

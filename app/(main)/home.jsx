@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { GearIcon, PlusIcon } from 'phosphor-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Button from '../../components/Button';
 import ConversationItems from '../../components/ConversationItems';
@@ -9,6 +9,7 @@ import ScreenWrapper from '../../components/ScreenWrapper';
 import Typo from '../../components/Typo';
 import { colors, radius, spacingX, spacingY } from '../../constants/theme';
 import { useAuth } from '../../contexts/authContext';
+import { getConversations, newConversation } from '../../socket/socketEvents';
 import { verticalScale } from '../../utils/styling';
 
 const Home = () => {
@@ -16,36 +17,61 @@ const Home = () => {
     const router = useRouter();
     const [selectedTab, setSelectedTab] = useState(0);
     const [loading, setLoading] = useState(false)
+    const [conversations, setConversations] = useState([]);
 
-    const conversations = [
-        {
+    useEffect(() => {
+        getConversations(processConversations);
+        newConversation(newConversationHandler)
 
-            name: "John Doe",
-            type: "direct",
+        getConversations(null)
+        return () => {
+            getConversations(processConversations, true)
+            newConversation(newConversationHandler, true)
+        }
+    }, [])
+    const processConversations = (res) => {
+        // console.log("res", res)
+        if (res.success) {
+            setConversations(res.data)
+        }
+    }
 
-        },
-        {
+    const newConversationHandler = (res) => {
+        if (res.success && res.data?.isNew) {
+            setConversations((prev) => [...prev, res.data])
+        }
 
-            name: "Team Dimond ",
-            type: "group",
-            lastMessage: {
-                senderName: "Virat",
-                content: "Hey! Are we still on for tonight? ",
-                createdAt: "2022-01-01T12:00:10.000Z",
-            }
-        },
-        {
+    }
 
-            name: "John Doe",
-            type: "direct",
-            lastMessage: {
-                senderName: "alice",
-                content: "Hey! Are we still on for tonight111? ",
-                createdAt: "2022-01-01T12:00:00.000Z",
-            }
-        },
+    // const conversations = [
+    //     {
 
-    ]
+    //         name: "John Doe",
+    //         type: "direct",
+
+    //     },
+    //     {
+
+    //         name: "Team Dimond ",
+    //         type: "group",
+    //         lastMessage: {
+    //             senderName: "Virat",
+    //             content: "Hey! Are we still on for tonight? ",
+    //             createdAt: "2022-01-01T12:00:10.000Z",
+    //         }
+    //     },
+    //     {
+
+    //         name: "John Doe",
+    //         type: "direct",
+    //         lastMessage: {
+    //             senderName: "alice",
+    //             content: "Hey! Are we still on for tonight111? ",
+    //             createdAt: "2022-01-01T12:00:00.000Z",
+    //         }
+    //     },
+
+    // ]
 
     let directConversation = conversations.filter((item) => item.type === "direct").sort((a, b) => {
         const aDate = a?.lastMessage?.createdAt || a.createdAt;

@@ -5,9 +5,13 @@ const CLOUDINARY_API_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_N
 
 export const uploadToCloudinary = async (file, folderName) => {
     try {
-        if (!file) return { success: true, data: null }
+        if (!file) {
+            return { success: true, data: null }
+        }
 
-        if (typeof file == "string") return { success: true, data: file }
+        if (typeof file == "string") {
+            return { success: true, data: file }
+        }
         if (file && file.uri) {
             const formData = new FormData();
             formData.append("file", {

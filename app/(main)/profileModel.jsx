@@ -92,6 +92,7 @@ const ProfileModel = () => {
 
         if (typeof userData.avatar == "object") {
             setIsLoading(true);
+            console.log(userData.avatar)
             const res = await uploadToCloudinary(userData.avatar, "Profiles");
             if (res.success) {
                 data.avatar = res.data;
