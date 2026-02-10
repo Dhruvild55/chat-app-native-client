@@ -43,36 +43,6 @@ const Home = () => {
 
     }
 
-    // const conversations = [
-    //     {
-
-    //         name: "John Doe",
-    //         type: "direct",
-
-    //     },
-    //     {
-
-    //         name: "Team Dimond ",
-    //         type: "group",
-    //         lastMessage: {
-    //             senderName: "Virat",
-    //             content: "Hey! Are we still on for tonight? ",
-    //             createdAt: "2022-01-01T12:00:10.000Z",
-    //         }
-    //     },
-    //     {
-
-    //         name: "John Doe",
-    //         type: "direct",
-    //         lastMessage: {
-    //             senderName: "alice",
-    //             content: "Hey! Are we still on for tonight111? ",
-    //             createdAt: "2022-01-01T12:00:00.000Z",
-    //         }
-    //     },
-
-    // ]
-
     let directConversation = conversations.filter((item) => item.type === "direct").sort((a, b) => {
         const aDate = a?.lastMessage?.createdAt || a.createdAt;
         const bDate = b?.lastMessage?.createdAt || b.createdAt;
