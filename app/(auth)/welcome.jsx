@@ -22,7 +22,7 @@ const welcome = () => {
                     entering={FadeIn.duration(700).springify()}
                     source={require("../../assets/images/welcome.png")}
                     style={styles.welcomeImage}
-                    resizeMode={"container"}
+                    resizeMode={"contain"}
                 />
                 <View>
                     <Typo color={colors.white} size={33} fontWeight={"600"} >Stay Connected</Typo>

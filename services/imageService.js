@@ -41,7 +41,7 @@ export const getAvatarPath = (file, isGroup) => {
 
     if (file && typeof file == 'object') return file.uri || file.url;
 
-    if (isGroup) return require("../assets/images/defaultGroupAvatar.png")
+    if (isGroup) return require("../assets/images/defaultAvatar.png");
 
-    return require("../assets/images/defaultAvatar.png")
+    return require("../assets/images/defaultAvatar.png");
 }

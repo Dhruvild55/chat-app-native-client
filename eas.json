@@ -8,9 +8,20 @@
             "distribution": "internal"
         },
         "preview": {
-            "distribution": "internal"
+            "distribution": "internal",
+            "env": {
+                "EXPO_PUBLIC_API_BASE_URL": "https://chat-app-native-server.onrender.com",
+                "CLOUDINARY_CLOUD_NAME": "dusgimcqs",
+                "CLOUDINARY_UPLOAD_PRESET": "images"
+            }
         },
-        "production": {}
+        "production": {
+            "env": {
+                "EXPO_PUBLIC_API_BASE_URL": "https://chat-app-native-server.onrender.com",
+                "CLOUDINARY_CLOUD_NAME": "dusgimcqs",
+                "CLOUDINARY_UPLOAD_PRESET": "images"
+            }
+        }
     },
     "submit": {
         "production": {}
