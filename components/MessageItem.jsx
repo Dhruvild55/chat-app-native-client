@@ -9,10 +9,8 @@ import Avatar from './Avatar';
 import Typo from './Typo';
 
 const MessageItem = ({ item, isDirect }) => {
-    console.log("item", item.id)
     const { user: currentUser } = useAuth();
     const isMe = currentUser?.id == item?.sender?.id;
-    console.log("item", item)
 
     const formattedDate = moment(item.createdAt).isSame(moment(), "day") ? moment(item.createdAt).format("h:mm A") : moment(item.createdAt).format("MMM D, h:mm A")
     return (

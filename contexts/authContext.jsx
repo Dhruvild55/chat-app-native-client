@@ -3,7 +3,9 @@ import { useRouter } from "expo-router";
 import { jwtDecode } from "jwt-decode";
 import { createContext, useContext, useEffect, useState } from "react";
 import { login as loginRequest, register as registerRequest } from "../services/authService";
+import { registerForPushNotificationsAsync } from "../services/notificationService";
 import { connectSocket, disconnectSocket } from "../socket/socket";
+import { updateProfile } from "../socket/socketEvents";
 
 export const AuthContext = createContext({
     token: null,
@@ -64,6 +66,13 @@ export const AuthProvider = ({ children }) => {
             // decoded value 
             const decoded = jwtDecode(token);
             setUser(decoded?.user);
+
+            // Register for push notifications
+            registerForPushNotificationsAsync().then(token => {
+                if (token) {
+                    updateProfile({ pushToken: token });
+                }
+            });
         }
     }
     const login = async (email, password) => {

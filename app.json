@@ -14,6 +14,7 @@
     },
     "android": {
       "package": "com.dhruvil.chatappfe",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/favicon.png"
@@ -49,6 +50,7 @@
       "eas": {
         "projectId": "b54d8e82-928f-460f-ac7a-58f63484feb7"
       }
-    }
+    },
+    "owner": "dhruvil_d"
   }
 }

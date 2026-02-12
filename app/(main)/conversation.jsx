@@ -15,7 +15,7 @@ import Typo from '../../components/Typo'
 import { colors, radius, spacingX, spacingY } from '../../constants/theme'
 import { useAuth } from '../../contexts/authContext'
 import { uploadToCloudinary } from "../../services/imageService"
-import { getMessages, newMessage } from "../../socket/socketEvents"
+import { getMessages, newMessage, getConversationById } from "../../socket/socketEvents"
 import { scale, verticalScale } from '../../utils/styling'
 const Conversation = () => {
     const [message, setMessage] = useState("")
@@ -24,15 +24,24 @@ const Conversation = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState([]);
+    const [fetchedConversation, setFetchedConversation] = useState(null);
 
     useEffect(() => {
         newMessage(newMessageHandler);
         getMessages(getMessagesHandler);
 
         getMessages({ conversationId })
+        if (!name || stringifiedParticipants == undefined) {
+            getConversationById({ conversationId });
+            getConversationById(getConversationHandler);
+        }
+
         return () => {
             newMessage(newMessageHandler, true);
             getMessages(getMessagesHandler, true)
+            if (!name || stringifiedParticipants == undefined) {
+                getConversationById(getConversationHandler, true);
+            }
         }
     }, [])
 
@@ -52,17 +61,23 @@ const Conversation = () => {
         }
     }
 
+    const getConversationHandler = (res) => {
+        if (res.success) {
+            setFetchedConversation(res.data);
+        }
+    }
 
 
-    const participants = JSON.parse(stringifiedParticipants);
-    let conversationAvatar = avatar;
-    let isDirect = type == "direct";
+
+    const participants = stringifiedParticipants ? JSON.parse(stringifiedParticipants) : (fetchedConversation?.participants || []);
+    let conversationAvatar = avatar || fetchedConversation?.avatar;
+    let isDirect = (type || fetchedConversation?.type) == "direct";
     const
         otherParticipants = isDirect ? participants.find((p) => p._id != currentUser?.id) : null
     if (isDirect && otherParticipants) {
         conversationAvatar = otherParticipants.avatar
     }
-    let conversationName = isDirect ? otherParticipants.name : name;
+    let conversationName = isDirect ? otherParticipants?.name : (name || fetchedConversation?.name);
     const onPickFile = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ["images"],
@@ -74,7 +89,6 @@ const Conversation = () => {
         }
     }
     const onSend = async () => {
-        console.log("message", message)
         if (!message && !selectedFile) return;
         if (!currentUser) return;
         setLoading(true);
@@ -90,7 +104,6 @@ const Conversation = () => {
                     Alert.alert("Error", "Could not send the image !")
                 }
             }
-            console.log("attachment  :", attachment)
             newMessage({
                 conversationId,
                 sender: {
@@ -105,7 +118,6 @@ const Conversation = () => {
             setMessage("");
             setSelectedFile(null);
         } catch (error) {
-            console.log(error)
         } finally {
             setLoading(false)
         }

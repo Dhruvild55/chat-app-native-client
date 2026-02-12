@@ -11,6 +11,7 @@ import { colors, radius, spacingX, spacingY } from '../../constants/theme';
 import { useAuth } from '../../contexts/authContext';
 import { getConversations, newConversation } from '../../socket/socketEvents';
 import { verticalScale } from '../../utils/styling';
+import { sendLocalNotification } from '../../services/notificationService';
 
 const Home = () => {
     const { user, logout } = useAuth();
@@ -116,6 +117,9 @@ const Home = () => {
             </View>
             <Button style={styles.floatingButton} onPress={() => router.push({ pathname: "/(main)/newConversationModel", params: { isGroup: selectedTab } })}>
                 <PlusIcon color={colors.black} size={verticalScale(22)} />
+            </Button>
+            <Button style={{ position: 'absolute', bottom: 100, right: 30, height: 50, width: 50, borderRadius: 25, backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }} onPress={() => sendLocalNotification()}>
+                <Typo color={colors.white}>Test</Typo>
             </Button>
         </ScreenWrapper >
     )

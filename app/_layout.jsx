@@ -1,8 +1,17 @@
-import { Stack } from 'expo-router'
+import { Stack, useRouter } from 'expo-router'
 import { StyleSheet } from 'react-native'
+import { useEffect } from 'react'
+import { initializeNotificationListeners } from '../services/notificationService'
 import { AuthProvider } from '../contexts/authContext'
 
 const RootLayout = () => {
+    const router = useRouter();
+
+    useEffect(() => {
+        const cleanup = initializeNotificationListeners(router);
+        return cleanup;
+    }, []);
+
     return (
         <AuthProvider>
             <Stack screenOptions={{ headerShown: false }} >

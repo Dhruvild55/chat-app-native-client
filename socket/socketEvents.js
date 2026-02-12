@@ -102,3 +102,17 @@ export const getMessages = (payload, off) => {
         socket.emit("getMessages", payload)
     }
 };
+export const getConversationById = (payload, off) => {
+    const socket = getSocket();
+    if (!socket) {
+        console.log("socket is not connected ");
+        return;
+    }
+    if (off) {
+        socket.off("getConversationById", payload);
+    } else if (typeof payload == "function") {
+        socket.on("getConversationById", payload);
+    } else {
+        socket.emit("getConversationById", payload)
+    }
+};
