@@ -41,7 +41,28 @@ const Home = () => {
         if (res.success && res.data?.isNew) {
             setConversations((prev) => [...prev, res.data])
         }
+    }
 
+    const handleAskAI = () => {
+        // 1. Check if we already have a conversation with guru@ai.bot
+        const botConv = conversations.find(c =>
+            c.type === 'direct' &&
+            c.participants.some(p => p.email === 'guru@ai.bot')
+        );
+
+        if (botConv) {
+            router.push({
+                pathname: "/(main)/conversation",
+                params: {
+                    id: botConv._id,
+                    name: "Guru AI",
+                    participants: JSON.stringify(botConv.participants),
+                    type: "direct"
+                }
+            });
+        } else {
+            router.push({ pathname: "/(main)/newConversationModel", params: { isGroup: 0 } });
+        }
     }
 
     let directConversation = conversations.filter((item) => item.type === "direct").sort((a, b) => {
@@ -60,10 +81,11 @@ const Home = () => {
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View style={{ flex: 1 }}>
-                        <Typo color={colors.neutral200} size={19} textProps={{ numberOfLines: 1 }}>Welcome back , <Typo fontWeight='700' color={colors.neutral200} size={22}>{user?.name}</Typo></Typo>
+                        <Typo color={colors.neutral400} size={19} textProps={{ numberOfLines: 1 }}>Welcome back,</Typo>
+                        <Typo fontWeight='700' color={colors.text} size={22}>{user?.name}</Typo>
                     </View>
                     <TouchableOpacity style={styles.settingIcon} onPress={() => router.push("/(main)/profileModel")}>
-                        <GearIcon color={colors.white} weight='fill' size={verticalScale(22)} />
+                        <GearIcon color={colors.text} weight='fill' size={verticalScale(22)} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.content}>
@@ -116,11 +138,14 @@ const Home = () => {
 
             </View>
             <Button style={styles.floatingButton} onPress={() => router.push({ pathname: "/(main)/newConversationModel", params: { isGroup: selectedTab } })}>
-                <PlusIcon color={colors.black} size={verticalScale(22)} />
+                <PlusIcon color={colors.white} weight='bold' size={verticalScale(22)} />
             </Button>
-            <Button style={{ position: 'absolute', bottom: 100, right: 30, height: 50, width: 50, borderRadius: 25, backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }} onPress={() => sendLocalNotification()}>
+            <Button style={[styles.floatingButton, { bottom: verticalScale(90), backgroundColor: colors.primaryDark }]} onPress={handleAskAI}>
+                <Typo color={colors.white} fontWeight='600' size={12}>AI</Typo>
+            </Button>
+            {/* <Button style={{ position: 'absolute', bottom: 100, right: 30, height: 50, width: 50, borderRadius: 25, backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }} onPress={() => sendLocalNotification()}>
                 <Typo color={colors.white}>Test</Typo>
-            </Button>
+            </Button> */}
         </ScreenWrapper >
     )
 }
@@ -141,7 +166,7 @@ const styles = StyleSheet.create({
     },
     settingIcon: {
         padding: spacingY._10,
-        backgroundColor: colors.neutral700,
+        backgroundColor: colors.neutral100, // Lighter background for icon
         borderRadius: radius.full,
     },
     content: {

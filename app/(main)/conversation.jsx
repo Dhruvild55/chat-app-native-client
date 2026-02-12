@@ -15,7 +15,7 @@ import Typo from '../../components/Typo'
 import { colors, radius, spacingX, spacingY } from '../../constants/theme'
 import { useAuth } from '../../contexts/authContext'
 import { uploadToCloudinary } from "../../services/imageService"
-import { getMessages, newMessage, getConversationById } from "../../socket/socketEvents"
+import { getMessages, newMessage, getConversationById, messageSuggestions } from "../../socket/socketEvents"
 import { scale, verticalScale } from '../../utils/styling'
 const Conversation = () => {
     const [message, setMessage] = useState("")
@@ -25,10 +25,12 @@ const Conversation = () => {
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState([]);
     const [fetchedConversation, setFetchedConversation] = useState(null);
+    const [suggestions, setSuggestions] = useState([]);
 
     useEffect(() => {
         newMessage(newMessageHandler);
         getMessages(getMessagesHandler);
+        messageSuggestions(suggestionsHandler);
 
         getMessages({ conversationId })
         if (!name || stringifiedParticipants == undefined) {
@@ -42,6 +44,7 @@ const Conversation = () => {
             if (!name || stringifiedParticipants == undefined) {
                 getConversationById(getConversationHandler, true);
             }
+            messageSuggestions(suggestionsHandler, true);
         }
     }, [])
 
@@ -65,6 +68,18 @@ const Conversation = () => {
         if (res.success) {
             setFetchedConversation(res.data);
         }
+    }
+
+    const suggestionsHandler = (res) => {
+        console.log("Suggestions received:", res);
+        if (res.conversationId == conversationId && res.suggestions) {
+            setSuggestions(res.suggestions);
+        }
+    }
+
+    const onChipPress = (suggestion) => {
+        setMessage(suggestion);
+        setSuggestions([]); // Clear suggestions after selection
     }
 
 
@@ -117,6 +132,7 @@ const Conversation = () => {
 
             setMessage("");
             setSelectedFile(null);
+            setSuggestions([]); // Clear suggestions when sending a message
         } catch (error) {
         } finally {
             setLoading(false)
@@ -127,14 +143,14 @@ const Conversation = () => {
         <ScreenWrapper showPattern={true} bgOpacity={0.5} >
             <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={styles.container}>
                 <Header style={styles.header} leftIcon={<View style={styles.headerLeft}>
-                    <BackButton />
+                    <BackButton color={colors.text} />
                     <Avatar size={40} uri={conversationAvatar} isGroup={type == "group"} />
-                    <Typo color={colors.white} fontWeight={"500"} size={22}>
+                    <Typo color={colors.text} fontWeight={"600"} size={18} textProps={{ numberOfLines: 1 }}>
                         {conversationName}
                     </Typo>
                 </View>}
                     rightIcon={<TouchableOpacity style={{ marginBottom: verticalScale(7) }}>
-                        <DotsThreeOutlineVerticalIcon weight='fill' color={colors.white} />
+                        <DotsThreeOutlineVerticalIcon weight='fill' color={colors.text} />
                     </TouchableOpacity>}
                 />
 
@@ -151,6 +167,16 @@ const Conversation = () => {
                         keyExtractor={(item) => item.id}
                     />
                     <View style={styles.footer} >
+                        {/* Suggestion Chips */}
+                        {suggestions.length > 0 && (
+                            <View style={styles.chipsContainer}>
+                                {suggestions.map((suggestion, index) => (
+                                    <TouchableOpacity key={index} style={styles.chip} onPress={() => onChipPress(suggestion)}>
+                                        <Typo size={12} color={colors.textLight}>{suggestion}</Typo>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        )}
                         <Input value={message} onChangeText={setMessage} placeholder="Type message" containerStyle={{
                             paddingLeft: spacingX._10,
                             paddingRight: scale(65),
@@ -170,9 +196,8 @@ const Conversation = () => {
                         <View style={styles.inputRightIcon}>
                             <TouchableOpacity style={styles.inputIcon} onPress={onSend}>
                                 {
-                                    loading ? <Loading size="small" color={colors.black} /> : <PaperPlaneTiltIcon color={colors.black} />
+                                    loading ? <Loading size="small" color={colors.white} /> : <PaperPlaneTiltIcon color={colors.white} weight='fill' />
                                 }
-
                             </TouchableOpacity>
                         </View>
 
@@ -242,5 +267,19 @@ const styles = StyleSheet.create({
     },
     footer: {
 
+    },
+    chipsContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: spacingX._15,
+        paddingBottom: spacingY._10,
+        gap: spacingX._10
+    },
+    chip: {
+        backgroundColor: colors.neutral200, // or a light primary color
+        paddingHorizontal: spacingX._12,
+        paddingVertical: spacingY._5,
+        borderRadius: radius._15,
+        borderWidth: 1,
+        borderColor: colors.neutral300
     }
 })

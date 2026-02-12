@@ -299,18 +299,19 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
     inputContainer: {
-        borderColor: colors.neutral350,
+        borderColor: colors.neutral200,
         paddingLeft: spacingX._20,
-        backgroundColor: colors.neutral300,
+        backgroundColor: colors.neutral50, // Much lighter/cleaner
+        borderWidth: 1
     },
     readOnlyField: {
         height: verticalScale(56),
         justifyContent: "center",
         paddingHorizontal: spacingX._20,
-        backgroundColor: colors.neutral300,
+        backgroundColor: colors.neutral50,
         borderRadius: radius.full,
         borderWidth: 1,
-        borderColor: colors.neutral350,
+        borderColor: colors.neutral200,
     },
     readOnlyText: {
         color: colors.text,

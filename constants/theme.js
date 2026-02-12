@@ -1,27 +1,29 @@
 import { scale, verticalScale } from "../utils/styling";
 
 export const colors = {
-    primary: "#facc15",
-    primaryLight: "#fef08a",
-    primaryDark: "#eab308",
-    text: "#292524",
+    primary: "#6366F1",      // Indigo 500 - Main Brand Color
+    primaryLight: "#818CF8", // Indigo 400 - Lighter accents
+    primaryDark: "#4F46E5",  // Indigo 600 - Darker interactions
+    text: "#1E293B",         // Slate 800 - Main Text (Softer than black)
+    textLight: "#64748B",    // Slate 500 - Secondary Text
+    background: "#F8FAFC",   // Slate 50 - Main Background (Clean & crisp)
     white: "#fff",
     black: "#000",
-    rose: "#ef4444",
-    otherBubble: "#FFF1BF",
-    myBubble: "#FFE1CC",
-    green: "#16a34a",
-    neutral50: "#fafaf9",
-    neutral100: "#f5f5f4",
-    neutral200: "#e7e5e4",
-    neutral300: "#d6d3d1",
-    neutral350: "#CCCCCC",
-    neutral400: "#a8a29e",
-    neutral500: "#78716c",
-    neutral600: "#57534e",
-    neutral700: "#44403c",
-    neutral800: "#292524",
-    neutral900: "#1c1917",
+    rose: "#F43F5E",         // Rose 500 - Errors/Delete
+    otherBubble: "#E0E7FF",  // Indigo 100 - Incoming messages
+    myBubble: "#6366F1",     // Indigo 500 - Outgoing messages (matches primary)
+    green: "#10B981",        // Emerald 500 - Success
+    neutral50: "#F9FAFB",
+    neutral100: "#F3F4F6",
+    neutral200: "#E5E7EB",
+    neutral300: "#D1D5DB",
+    neutral350: "#9CA3AF",
+    neutral400: "#6B7280",
+    neutral500: "#64748B",   // Slate 500
+    neutral600: "#475569",   // Slate 600
+    neutral700: "#334155",   // Slate 700
+    neutral800: "#1E293B",   // Slate 800
+    neutral900: "#0F172A",   // Slate 900
 };
 
 export const spacingX = {

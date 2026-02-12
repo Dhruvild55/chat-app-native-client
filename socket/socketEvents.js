@@ -116,3 +116,18 @@ export const getConversationById = (payload, off) => {
         socket.emit("getConversationById", payload)
     }
 };
+
+export const messageSuggestions = (payload, off) => {
+    const socket = getSocket();
+    if (!socket) {
+        console.log("socket is not connected ");
+        return;
+    }
+    if (off) {
+        socket.off("messageSuggestions", payload);
+    } else if (typeof payload == "function") {
+        socket.on("messageSuggestions", payload);
+    } else {
+        socket.emit("messageSuggestions", payload)
+    }
+};
